@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Fusion - Bilan Carbone Déchets & Énergie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+
+
+  <!-- Bibliothèques Chart.js et SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  
+</head>
+<body>
+  <!-- Barre d'onglets -->
+  <div class="tabs">
+    <button class="tab-button" onclick="openTab(event, 'tab-accueil')">Accueil</button>
+    <button class="tab-button tab-dechets" onclick="openTab(event, 'tab-dechets')">Déchets</button>
+    <button class="tab-button tab-energie " onclick="openTab(event, 'tab-energie')">Énergie</button>
+    <button class="tab-button tab-deplacements " onclick="openTab(event, 'tab-deplacements')">Déplacements</button>
+    <button class="tab-button tab-immobilisations " onclick="openTab(event, 'tab-immobilisations')">Immobilisations</button>
+    
+    <button class="tab-button" onclick="openTab(event, 'tab-bilan')">Bilan total</button>
+  </div>
+
+  <!-- ===================== ONGLET DECHETS ===================== -->
+  <div id="tab-dechets" class="tab-content tab-dechets">
+    <div class="container">
+      <h1>Calcul des Émissions de CO2 des Déchets</h1>
+
+      <div class="logo-container">
+        <img src="eseo.png" alt="Logo ESEO" class="logo">
+      
+    </div>
+        
+      <div id="form-section-dechets">
+        <form>
+          <!-- DECHETS EMBALLAGES -->
+          <section class="section">
+            <h2>Déchets Emballages</h2>
+            <label for="dechet">Type de Déchet:</label>
+            <select id="dechet">
+              <option value="carton">Cartons</option>
+              <option value="plastique">Plastiques</option>
+              <option value="verre">Verre</option>
+              <option value="bois">Bois</option>
+            </select>
+            <label for="quantite">Quantité (kg):</label>
+            <input type="number" id="quantite" placeholder="Quantité en kg">
+            <button type="button" onclick="ajouterDechet()">Ajouter Déchet</button>
+            <ul id="listeDechets"></ul>
+          </section>
+
+          <!-- DECHETS MENAGERS -->
+          <section class="section">
+            <h2>Déchets Ménagers</h2>
+            <label for="dechetMenager">Type de Déchet:</label>
+            <select id="dechetMenager">
+              <option value="ordures">Ordures Ménagères</option>
+              <option value="dechetsVerts">Déchets Verts</option>
+            </select>
+            <label for="quantiteMenager">Quantité (kg):</label>
+            <input type="number" id="quantiteMenager" placeholder="Quantité en kg">
+            <button type="button" onclick="ajouterDechetMenager()">Ajouter Déchet Ménager</button>
+            <ul id="listeDechetsMenagers"></ul>
+          </section>
+
+          <!-- AUTRES DECHETS -->
+          <section class="section">
+            <h2>Autres Déchets</h2>
+            <label for="dechetAutre">Type de Déchet:</label>
+            <select id="dechetAutre">
+              <option value="deee">Déchets DEEE</option>
+              <option value="piles">Piles</option>
+              <option value="metaux">Métaux Ferreux</option>
+            </select>
+            <label for="quantiteAutre">Quantité (kg):</label>
+            <input type="number" id="quantiteAutre" placeholder="Quantité en kg">
+            <button type="button" onclick="ajouterDechetAutre()">Ajouter Autre Déchet</button>
+            <ul id="listeAutresDechets"></ul>
+          </section>
+
+          <!-- EAUX USEES -->
+          <section class="section">
+            <h2>Eaux Usées</h2>
+            <label for="volumeEaux">Volume d'Eaux Usées (m³):</label>
+            <input type="number" id="volumeEaux" placeholder="Volume en m³">
+          </section>
+
+          <button type="button" onclick="calculerEmissionsDechets()">Calculer</button>
+          <button type="button" class="btn" onclick="resetDechets()">Réinitialiser</button>
+        </form>
+      </div>
+
+      <!-- Section résultat cachée au départ -->
+      <div id="result-section-dechets">
+        <h2>Résultats des Émissions de CO2 (Déchets)</h2>
+        <h2 id="resultatCO2"></h2> 
+        <canvas id="carbonChartDechets" width="400" height="200"></canvas>
+        <button id="back-button-dechets" class="btn" type="button" onclick="goBackDechets()">Revenir au formulaire</button>
+        <button id="excel" class="btn"  type="button" onclick="exportToExcelDechets()">Télécharger le fichier Excel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================== ONGLET ENERGIE ===================== -->
+  <div id="tab-energie" class="tab-content tab-energie " >
+    <div class="container">
+      <h1>Calcul des Émissions de CO2 de l'Énergie</h1>
+
+      <div class="logo-container">
+        <img src="eseo.png" alt="Logo ESEO" class="logo">
+       
+    </div>
+
+      <div id="form-section-energie">
+        <form>
+          <!-- ÉLECTRICITÉ -->
+          <section class="section">
+            <h2>Achat d'électricité</h2>
+            <label for="electricite">Consommation d'électricité (kWh):</label>
+            <input type="number" id="electricite" placeholder=" conso  en kWh">
+          </section>
+
+          <!-- GAZ -->
+          <section class="section">
+            <h2>Achat de Gaz</h2>
+            <label for="gaz">Sélectionner votre type de gaz:</label>
+            <select id="gaz">
+              <option value="naturel">Gaz naturel</option>
+              <option value="propane">Propane</option>
+              <option value="fioul">Fioul</option>
+              <option value="biomethane">Biométhane</option>
+            </select>
+            <label for="Gaz">Consommation de gaz en kWhPCl</label>
+            <input type="number" id="Gaz" placeholder=" conso  en kWhPCl">
+          </section>
+
+          <!-- VAPEUR & FROID -->
+          <section class="section">
+            <h2>Achat de Vapeur et de Froid</h2>
+            <label for="vapeurType">Sélectionner votre réseau de vapeur (si existant):</label>
+            <select id="vapeurType">
+              <option value=""></option>
+              <option value="belley">belley</option>
+              <option value="autre_reseau">Autre Réseau</option>
+            </select>
+
+            <label for="vapeur">Consommation de Vapeur (kWh):</label>
+            <input type="number" id="vapeur" placeholder=" conso en kWh">
+
+            <label for="froidType">Sélectionner votre réseau froid (si existant):</label>
+            <select id="froidType">
+              <option value=""></option>
+              <option value="testfroid">testfroid</option>
+              <option value="autre_froid">Autre Froid</option>
+            </select>
+
+            <label for="froid">Consommation de Froid (kWh):</label>
+            <input type="number" id="froid" placeholder=" conso en kWh">
+          </section>
+
+          <button type="button" onclick="calculerEmissionsEnergie()">Calculer</button>
+          <button type="button" class="btn" onclick="resetEnergie()">Réinitialiser</button>
+        </form>
+      </div>
+
+      <!-- Section résultat cachée au départ -->
+      <div id="result-section-energie">
+        <h2>Résultats des Émissions de CO2 (Énergie)</h2>
+        <div id="result-energie"></div>
+        <canvas id="carbonChartEnergie" width="400" height="200"></canvas>
+        <button id="back-button-energie" class="btn" type="button" onclick="goBackEnergie()">Revenir au formulaire</button>
+        <button id="excelEnergie" class="btn"  type="button" onclick="exportToExcelEnergie()">Télécharger le fichier Excel</button>
+      </div>
+    </div>
+  </div>
+
+   <!-- ===================== ONGLET Déplacements ===================== -->
+    <div id="tab-deplacements" class="tab-content tab-deplacements">
+      <div class ="container">
+        <header>
+            <h1>Calcul des Émissions de CO2 liées aux déplacements</h1>
+        </header>
+        <div id ="form-section-deplacements">
+         
+
+            <form id="formulaire-deplacements">
+               
+                <section id="informations">
+                    <div class="logo-container">
+                        <img src="eseo.png" alt="Logo ESEO" class="logo" >
+                    </div>
+                    <p> Bienvenue sur l'outil de calcul des émissions ges liés aux déplacements.</p>
+                    <p> Il est nécessaire d'effectuer un sondage sur les moyens de déplacements avant de remplir ce formulaire(à modifier)</p>
+                </section>
+
+
+                <!-- je pense faire deux divs dedans, un div pour déplacement classiques des gens et un autre pour véhicules possédés mais plus tard surement-->
+                <section id="deplacementdt">
+                    <h2>Déplacement Domicile Travail</h2>
+                    <h3>Déplacement de personnes</h3>
+                    <p>Remarque: La règle de remplissage du formulaire est la suivante, si le moyen de déplacement
+                        est la voiture , il faudra sélectionner le nombre de voitures et la distance parcourue. Si le moyen de déplacement considéré est
+                    le tramway, bus, ou train il faudra considérer la distance et le nombre de personne correspondantes aux différents modes de transport </p>
+
+
+                    <label for="deplacementdtmode"> Choisissez un mode de déplacement</label>
+                    <select id="deplacementdtmode" onchange="updatePeopleNumberLabel()">
+                        <option value=""></option>
+                        <option value="voitureEssence">Voiture Motorisation Essence</option>
+                        <option value="voitureDiesel">Voiture Motorisation Gazole</option>
+                        <option value="hybride">Véhicule Hybride(mild Essence)</option>
+                        <option value="electrique"> Véhicule électrique</option>
+                        <option value="tramway">Tramway</option>
+                        <option value="bus">Autobus</option>
+                        <option value="marche">Marche</option>
+                        <option value="velo">Vélo</option>
+                        <option value="train">Train</option>
+                    </select>
+
+                    
+                <label for="distancedt">Distance aller-retour Domicile Travail (en km)</label>
+                <input type="number" id="distancedt" min="0">
+
+               <label for="peopledt" id="peoplenumber"> Nombre de personnes</label>
+               <input type="number" id="peopledt" min="1">
+               
+               <button type="button" onclick="addPeopleTransport()">Ajouter</button>
+               <ul id="people-transport-list"></ul>
+
+               <h3>Voiture(s) possédée(s) par l'établissement</h3>
+               <p>Veuillez sélectionnez le type de carburant et la quantité en litres</p>
+
+                <label for="gas">Sélectionner le type de carburant</label>
+                <select id="gas">
+                    <option value=""></option>
+                    <option value="essence">Essence(E10)</option>
+                    <option value="essence1">Essence(E85)</option>
+                    <option value="gazole">Gazole</option>
+                    <option value="biodiesel">Biodiesel</option>
+                    <option value="bioethanol">Bioéthanol</option>
+                    <option value="gnl">GNL(Gaz Naturel Liquéfié)</option>
+                </select>
+
+                <label for="gas-quantity">Quantité en litres</label>
+                <input type="number" id="gas-quantity" min="1" placeholder="en L">
+
+                <button type="button" onclick="addGas()">Ajouter</button>
+                <ul id="gas-list"></ul>
+                </section>
+
+
+                <section id="deplacementsct">
+                    <h2>Déplacement dans le cadre du travail</h2>
+
+                    
+                    <label for="deplacementctmode"> Choisissez un mode de déplacement</label>
+                    <select id="deplacementctmode" onchange="updatePeopleWNumberLabel()">
+                        <option value=""></option>
+                        <option value="voitureEssence">Voiture Motorisation Essence</option>
+                        <option value="voitureDiesel">Voiture Motorisation Gazole</option>
+                        <option value="hybride">Véhicule Hybride(mild Essence)</option>
+                        <option value="electrique"> Véhicule électrique</option>
+                        <option value="tramway">Tramway</option>
+                        <option value="bus">Autobus</option>
+                        <option value="marche">Marche</option>
+                        <option value="velo">Vélo</option>
+                        <option value="train">Train</option>
+                        <option value="avioncourt">Avion Court-courrier</option>
+                        <option value="avionmoyen">Avion Moyen-courrier</option>
+                        <option value="avionlong">Avion Long-courrier</option>
+                        <option value="avion1court">Avion Court-courrier (par nombre de voyages)</option>
+                        <option value="avionmoyen1">Avion Moyen-courrier (par nombre de voyages)</option>
+                        <option value="avionlong1">Avion Long-courrier (par nombre de voyages)</option>
+                    </select>
+
+                    <label for="distancect">Distance aller-retour Domicile Travail (en km)</label>
+                    <input type="number" id="distancect" min="0">
+
+                    <label for="peoplect" id="peopleworknumber"> Nombre de personnes</label>
+                    <input type="number" id="peoplect" min="1">
+
+                    <button type="button" onclick="addPeopleWTransport()">Ajouter</button>
+                    <ul id="peoplework-transport-list"></ul>
+
+
+                    <h3>Voiture(s) possédée(s) par l'établissement ou trajets remboursés par l'établissement</h3>
+               <p>Veuillez sélectionnez le type de carburant et la quantité en litres</p>
+
+                <label for="gasw">Sélectionner le type de carburant</label>
+                <select id="gasw">
+                    <option value=""></option>
+                    <option value="essence">Essence(E10)</option>
+                    <option value="essence1">Essence(E85)</option>
+                    <option value="gazole">Gazole</option>
+                    <option value="biodiesel">Biodiesel</option>
+                    <option value="bioethanol">Bioéthanol</option>
+                    <option value="gnl">GNL(Gaz Naturel Liquéfié)</option>
+                </select>
+
+                <label for="gasw-quantity">Quantité en litres</label>
+                <input type="number" id="gasw-quantity" min="1" placeholder="en L">
+
+                <button type="button" onclick="addGasW()">Ajouter</button>
+                <ul id="gasw-list"></ul>
+                </section>
+
+                
+
+
+                
+
+                <section id="deplacementi">
+                    <h2>Déplacement d'invités</h2>
+
+                    <label for="deplacementimode"> Choisissez un mode de déplacement</label>
+                    <select id="deplacementimode" onchange="updatePeopleINumberLabel()">
+                        <option value=""></option>
+                        <option value="voitureEssence">Voiture Motorisation Essence</option>
+                        <option value="voitureDiesel">Voiture Motorisation Gazole</option>
+                        <option value="hybride">Véhicule Hybride(mild Essence)</option>
+                        <option value="electrique"> Véhicule électrique</option>
+                        <option value="tramway">Tramway</option>
+                        <option value="bus">Autobus</option>
+                        <option value="marche">Marche</option>
+                        <option value="velo">Vélo</option>
+                        <option value="train">Train</option>
+                        <option value="avioncourt">Avion Court-courrier</option>
+                        <option value="avionmoyen">Avion Moyen-courrier</option>
+                        <option value="avionlong">Avion Long-courrier</option>
+                        <option value="avion1court">Avion Court-courrier (par nombre de voyages)</option>
+                        <option value="avionmoyen1">Avion Moyen-courrier (par nombre de voyages)</option>
+                        <option value="avionlong1">Avion Long-courrier (par nombre de voyages)</option>
+                    </select>
+
+                    <label for="distancei">Distance aller-retour Domicile Travail (en km)</label>
+                    <input type="number" id="distancei" min="0">
+
+                    <label for="peoplei" id="peopleinvitenumber"> Nombre de personnes</label>
+                    <input type="number" id="peoplei" min="1">
+
+                    <button type="button" onclick="addPeopleITransport()">Ajouter</button>
+                    <ul id="peopleinvite-transport-list"></ul>
+
+
+                    <h3>Trajets de consommation  remboursés à la consommation de carburant</h3>
+               <p>Veuillez sélectionnez le type de carburant et la quantité en litres</p>
+
+                <label for="gasi">Sélectionner le type de carburant</label>
+                <select id="gasi">
+                    <option value=""></option>
+                    <option value="essence">Essence(E10)</option>
+                    <option value="essence1">Essence(E85)</option>
+                    <option value="gazole">Gazole</option>
+                    <option value="biodiesel">Biodiesel</option>
+                    <option value="bioethanol">Bioéthanol</option>
+                    <option value="gnl">GNL(Gaz Naturel Liquéfié)</option>
+                </select>
+
+                <label for="gasi-quantity">Quantité en litres</label>
+                <input type="number" id="gasi-quantity" min="1" placeholder="en L">
+
+                <button type="button" onclick="addGasI()">Ajouter</button>
+                <ul id="gasi-list"></ul>
+                </section>
+
+                <section>
+                    <button type="button" onclick="calculateCO2Deplacements()">Calculer</button>
+                    <button type="button">Réinitialiser</button>
+                </section>
+            </form>
+        </div>
+
+        <!-- Section Résultats-->
+         <div id ="result-section-deplacements">
+            <h1>Résulats</h1>
+            <div id="result"></div>
+            <div class="chart-container">
+                <h2> Répartition des émissions de CO2</h2>
+                <canvas id="carbonChartDeplacements" width="350" height="400"></canvas>
+             </div>
+             <button type="button" onclick="exportExcel()">Exporter en Excel</button>
+             <button type="button" onclick="goBackDeplacements()">Revenir au formulaire</button>
+         </div>
+         
+
+    </div>
+
+
+
+    </div>
+
+
+<!-- ===================== ONGLET Immobilisations ===================== -->
+ <div id="tab-immobilisations" class="tab-content tab-immobilisations">
+  <div class="container"> 
+
+    <header>
+        <h1>Calcul des Emissions liées aux Immobilisations</h1>
+    </header>
+
+    <div id="form-section-immo">
+        
+          <div class="logo-container">
+             <img src="eseo.png" alt="Logo ESEO" class="logo">
+
+         </div>
+        <form id="formulaire-immo">
+            <section id="informations">
+                <p>Bienvenue sur l'outil Calcul des émissioons de GEs liées aux Immobilisations d'un bâtiment d'enseignement Supérieur</p>
+            </section>
+
+            <section id="bâtiments">
+                <h2>Emission liées à la construction du bâtiment</h2>
+                <label for="annees">Année de construction</label>
+                <input type="number" id="annees">
+
+                <label for="bat">Superficie</label>
+                <input type="number" id="bat" placeholder=" en m2">
+                
+                <label for="amortissement">Durée d'amortissement en années</label>
+                <input type="number" id="amortissement" placeholder=" en années">
+            </section>
+
+            <section id="routes">
+                <h2> Routes, Parkings</h2>
+                <label for="voirie">Sélectionner votre type de voirie:</label>
+                <select id="voirie">
+                    <option value="RouteTC4">Route TC4</option>
+                    <option value="parking">Parking</option>
+                </select>
+
+                <label for="surface">Superficie</label>
+                <input type="number" id="surface" placeholder=" en m2">
+
+                <label for="amortissement1">Durée d'amortissement en années</label>
+                <input type="number" id="amortissement1" placeholder=" en années">
+
+                <button type="button" onclick="addRouteParking()">Ajouter</button>
+                <ul id="route-parking-list"></ul>
+            </section>
+
+
+            <section>
+                <h2>Matériel Informatique</h2>
+
+                <label for="matériel">Choisissez le type de matériel Informatique</label>
+                <select id="matériel">
+                    <option value="Ecran21">Ecran 21 pouces</option>
+                    <option value="portable">Pc portable</option>
+                    <option value="ordinateurFixe">Ordinateur Fixe</option>
+                    <option value="Ecran23">Ecran 23,6 pouces</option>
+                    <option value="imprimanteLaser">Imprimante Laser</option>
+                    <option value="Imprimante">Imprimante jet d'encre</option>
+                    <option value="photocopieurs">Photocopieurs</option>
+                    <option value="imprimanteMultiFonctions">Imprimante multi-fontions</option>
+                    <option value="ServeursInformatiques">Serveurs Informatiques</option>
+                    <option value="videoPrjecteurs">Vidéo-projecteur</option>
+                </select>
+
+                <label for="nombre">Nombre d'appareils</label>
+                <input type="number" id="nombre">
+
+                <label for="amortissement2">Durée d'amortissement en années</label>
+                <input type="number" id="amortissement2" placeholder=" en années">
+
+                <button type="button" onclick="addMateriel()">Ajouter</button>
+                <ul id="materiel-list"></ul>
+            </section>
+
+            <section id="calculs">
+                <button type="button" id="calcul" onclick="calculateCO2Immmo()">Calculer</button>
+                <button type="button" id="refresh" >Réinitialiser</button>
+            </section>
+        
+        
+        
+        
+        </form>
+    </div>
+
+    <div id="result-section-immo">
+        <h2>Résultats des émissions</h2>
+        <div id="resultat"></div>
+        <canvas id="carbonChartImmo" width="400" height="600"></canvas>
+        <button type="button" onclick="exportExcel()">Exporter en Excel</button>
+        <button type="button" onclick="goBackImmo()">Revenir au formulaire</button>
+    </div>
+
+</div> 
+
+
+
+ </div>
+ 
+
+  <!-- ===================== ONGLET BILAN TOTAL ===================== -->
+  <div id="tab-bilan" class="tab-content">
+    <div class="container">
+      <h1>Bilan Total - Déchets + Énergie + Activités BDE</h1>
+
+      <div class="logo-container">
+        <img src="eseo.png" alt="Logo ESEO" class="logo">
+       
+    </div>
+      <div id="result-section-fusion">
+        <p>Déchets : <span id="dechetValue">0</span> kg CO₂e</p>
+        <p>Énergie : <span id="energieValue">0</span> kg CO₂e</p>
+        <p>Déplacement: <span id="deplacementsValue">0</span> kg CO₂e</p>
+        <p>Immobilisations : <span id="immoValue">0</span> kg CO₂e</p>
+       
+        <hr>
+        <h2>Bilan Global : <span id="bilanGlobalValue">0</span> kg CO₂e</h2>
+
+         <!-- Camembert global -->
+        <canvas id="carbonChartFusion" width="400" height="200"></canvas>
+        <button id="afficherBDE">Voir le bilan total BDE inclus</button>
+        <button id="revenirSansBDE">Revenir</button>
+
+
+        <button id="excelFusion" class="btn" type="button" onclick="exportToExcelFusion()">Télécharger le bilan global</button>
+        <button id="enregistrer" onclick="enregistrerBilan()">Enregistrer le Bilan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ONGLET Accueil ===================== -->
+  <div id="tab-accueil" class="tab-content">
+    <div class="container">
+      <h1>Bienvenue sur l'outil Bilan GES</h1>
+
+      <div class="logo-container">
+        <img src="eseo.png" alt="Logo ESEO" class="logo">
+       
+    </div>
+     <p> Chaque onglet correspond à un outil distinct de calcul de bilan ges bien ciblé. </p>
+     <p> Vous pouvez choisir d'effectuer un bilan soit ciblé pour un outil bien spécifique et exporter les résultats ou sinon effectuer un bilan global de votre choix et 
+      observer les résultats sur l'onglet bilan total (où vous pourrez exporter les résultats) </p>
+      <h4> On va pouvoir faire de grandes choses </h4>
+    </div>
+  </div>
+
+
+  
+   
+   <script src="script.js"></script>
+</body>
+</html>

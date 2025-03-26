@@ -1,0 +1,250 @@
+
+/* le style général est à revoir les boutons les inputs select etc*/
+
+/* ---------- Styles GLOBAUX pour la structure ---------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background: #ecf0f3;
+  background-image: url("1536249531871.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Séparateur entre les sections */
+#tab-bde section:not(:last-child)::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: #bbb;
+  margin: 25px 0;
+}
+
+/* ---------- Onglets ---------- */
+.tabs {
+  display: flex;
+  background: #2c3e50;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  background: #2c3e50;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  font-weight: bold;
+}
+
+.tabs button:hover {
+  background: #34495e;
+  transform: scale(1.05);
+}
+
+.tabs button.active {
+  background: #1e3d58;
+}
+
+#tab-deplacements section{
+  padding: 20px;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+#tab-deplacements section:hover{
+  transform: translateY(-5px); /* Effet de survol dynamique */
+}
+
+#tab-immobilisations section{
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: whitesmoke;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+#tab-immobilisations section:hover{
+  transform: translateY(-5px);
+}
+
+/* ---------- Contenu des onglets ---------- */
+.tab-content {
+  display: none;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Fond personnalisé pour chaque onglet */
+.tab-content.tab-bde {
+  background-image: url("arbre.jpg");
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.tab-content.tab-energie {
+  background-image: url("energy.jpg");
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.tab-content.tab-dechets {
+  background-image: url("arbre.jpg");
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- Conteneur principal ---------- */
+.container {
+  background: white;
+  width: 90%;
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- Titres et textes ---------- */
+h1, h2, h4 {
+  text-align: center;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #007BFF;
+  text-shadow: 1px 1px 2px rgba(0, 123, 255, 0.3);
+}
+
+h4 {
+  color: red;
+}
+
+/* ---------- Formulaires ---------- */
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #2c3e50;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #2980b9;
+  outline: none;
+}
+
+/* ---------- Boutons ---------- */
+button {
+  width: 100%;
+  background: #2980b9;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: #3498db;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Bouton retour */
+#back-button, #revenirSansBDE {
+  background-color: #007BFF;
+  margin-top: 20px;
+}
+
+#back-button:hover, #revenirSansBDE:hover {
+  background-color: #0056b3;
+}
+
+/* Bouton Excel */
+#excel, #excelEnergie, #excelFusion {
+  background-color: yellowgreen;
+  color: white;
+  margin-top: 10px;
+}
+
+#excel:hover, #excelEnergie:hover, #excelFusion:hover {
+  background-color: rgba(136, 255, 0, 0.8);
+}
+
+/* ---------- Listes ---------- */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+ul li {
+  background: #ecf0f1;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* ---------- Résultats ---------- */
+#result-section, #result-section-energie, #result-section-dechets, #result-section-deplacements , #result-section-immo{
+  display: none;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Logo ---------- */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.2em;
+}
+
+.logo {
+  width: 80px;
+  height: auto;
+}
+
+/* CSS pour styliser le bouton de suppression en le rendant plus petit */
+button[id^="delete-btn-"] {
+  font-size: 0.8rem; /* taille de police réduite */
+  padding: 4px 8px;  /* marges internes plus petites */
+  margin-left: 5px;  /* espacement à gauche pour séparer du texte */
+}
+
